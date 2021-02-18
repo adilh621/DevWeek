@@ -1,37 +1,62 @@
-const express = require("express");
-const mongoose = require("mongoose");
-const { mongoOptions, sessionOptions } = require("./utils/config");
-const routes = require("./routes");
+const express = require('express');
+const socketio = require('socket.io');
+const http = require('http');
+
+const {addUser , removeUser , getUser , getUsersInRoom} = require("./user.js")
+
+
+const PORT = process.env.PORT || 5000;
+
+const router = require('./router')
+
+// socket io middleware
+
 const app = express();
-const session = require("express-session");
-// Requiring passport as we've configured it
-const passport = require("./utils/passport");
-const logger = require("morgan");
+const server = http.createServer(app)
+const io = socketio(server, {
+    cors: {
+        origin : "*",
+    }
+})
 
-const PORT = process.env.PORT || 3001;
+app.use(express.static("client/build"))
 
-// logging (development)
-app.use(logger("dev"));
 
-// Define middleware here
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
+io.on('connection',(socket)=>{
+    
 
-// Serve static assets from react build
-app.use(express.static("client/build"));
+    socket.on('join' , ({name , room},callback)=>{
+        
 
-// We need to use sessions to keep track of our user's login status
-app.use(session(sessionOptions));
-app.use(passport.initialize());
-app.use(passport.session());
+        const {error,user} = addUser({id: socket.id , name , room})
+        if(error) return callback(error)
 
-// Add routes, both API and view
-app.use(routes);
+        socket.emit('message',{user:'admin',text: `${user.name}, welcome to the room`})
+        socket.broadcast.to(user.room).emit('message', { user: 'admin', text: `${user.name} has joined!` });
 
-// Connect to the Mongo DB
-mongoose.connect(process.env.ATLAS_URL || "mongodb://localhost/mern", mongoOptions);
+        socket.join(user.room);
 
-// Start the API server
-app.listen(PORT, function () {
-	console.log(`🌎  ==> API Server now listening on PORT ${PORT}!`);
-});
+        callback();
+
+
+        
+    })
+
+    socket.on('sendMessage',(message,callback)=>{
+        const user = getUser(socket.id);
+
+        io.to(user.room).emit('message', { user: user.name, text: message });
+
+        callback();
+    })
+
+    socket.on('disconnect' , ()=>{
+        console.log('user disconnected and left chat')
+    })
+})
+
+
+app.use(router)
+
+
+server.listen(PORT, ()=> console.log(`Server has started on port ${PORT}`))
