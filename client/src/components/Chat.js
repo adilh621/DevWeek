@@ -13,6 +13,7 @@ const Chat = ({location})=> {
     const [message , setMessage] = useState([]);
     const [messages , setMessages] = useState([]);
     const ENDPOINT = 'https://speak-upp.herokuapp.com/' 
+    
 
     useEffect(()=>{
         const {name , room} = queryString.parse(location.search)
