@@ -1,0 +1,18 @@
+button {
+  border-radius: 10px !important;
+  margin-left: 10px;
+}
+
+.customMargins {
+  margin: 50px 50px 0px 50px;
+
+}
+
+.jumboMargins {
+  margin-top: 25px;
+
+}
+
+.rowMargin {
+  margin-top: 20px;
+}
