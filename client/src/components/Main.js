@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 
@@ -39,32 +38,33 @@ const Main = () => {
 
             {/* <select onChange={(event)=>{setRoom(event.target.value)}}> */}
             <button
-
-                onChange={(event) => {
-                    setColor(event.target.value)
-                }}
-
                 onClick={(event) => {
+                    const current = colors.happy
                     setRoom(event.target.value)
-                    // changeBackground(event.target.value)
+                    setColor(current)
                 }}
-
-
                 value="happy">happy</button>
 
             <button onClick={(event) => {
+                const current = colors.sad
                 setRoom(event.target.value)
-                setColor(event.target.value)
-            }} value="sad">sad</button>
+                setColor(current)
+            }}
+                value="sad">sad</button>
 
             <button onClick={(event) => {
+                const current = colors.mad
                 setRoom(event.target.value)
-                setColor(event.target.value)
-            }} value="mad">mad</button>
+                setColor(current)
+            }}
+                value="mad">mad</button>
+
             <button onClick={(event) => {
+                const current = colors.depress
                 setRoom(event.target.value)
-                setColor(event.target.value)
-            }} value="depress">depress</button>
+                setColor(current)
+            }}
+                value="depress">depress</button>
             {/* </select> */}
 
             <Link onClick={event => (!name || !room) ? event.preventDefault() : null} to={`/chat?name=${name}&room=${room}`}>
@@ -72,19 +72,17 @@ const Main = () => {
             </Link>
 
 
-            {/* this part should be integrated inside each button */}
-            <select value={color} onChange={e => setColor(e.target.value)}>
+            {/* <select value={color} onChange={e => setColor(e.target.value)}>
                 {Object.entries(colors).map(([name, value]) => (
                     <option key={`color--${name}`} value={value}>
                         {name}
                     </option>
                 ))}
-            </select>
-
+            </select> */}
 
 
         </div>
     )
 }
 
-export default Main
+export default Main;
